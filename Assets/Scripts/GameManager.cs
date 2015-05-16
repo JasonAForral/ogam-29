@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,23 +9,35 @@ public class GameManager : MonoBehaviour
 	public GameObject grassDark;
 	public GameObject selection;
 	public GameObject deselection;
+	public Text moneyText;
+	public GameObject piggyBank;
+
+	private int width;
+	private int length;
+	private float money;
 
 	// Use this for initialization
 	void Start ()
 	{
-		this.InitializeGround (16, 8);
-		this.InitializeGrass (11, 5);
+		this.width = 8;
+		this.length = 4;
+		this.InitializeGround (this.width + 4, this.length + 4);
+		this.InitializeGrass (this.width, this.length);
+		this.money = 0f;
+		this.InstantiatePiggyBank ();
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		this.money += Time.deltaTime;
+		this.moneyText.text = "Money: " + (int)this.money;
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast (ray, out hit, 20f)) {
 			if (hit.transform.tag == "Grass") {
 				this.selection.transform.position = hit.transform.position + (Vector3.up * 0.1f);
-			} else if (hit.transform.tag != "Selection") {
+			} else if (hit.transform.tag == "Ground") {
 				this.selection.transform.position = this.deselection.transform.position;
 			}
 		}
@@ -48,5 +61,11 @@ public class GameManager : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	protected void InstantiatePiggyBank ()
+	{
+		Vector3 position = new Vector3 ((this.width / -2) - 1, 1f, (this.length / 2) - 0.5f);
+		Instantiate (this.piggyBank, position, Quaternion.identity);
 	}
 }
