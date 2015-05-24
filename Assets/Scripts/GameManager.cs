@@ -10,11 +10,12 @@ public class GameManager : MonoBehaviour
 	public GameObject selection;
 	public GameObject deselection;
 	public Text moneyText;
-	public GameObject piggyBank;
+	public ToyController piggyBankPrefab;
 
 	private int width;
 	private int length;
 	private float money;
+	private ToyController piggyBank;
 
 	// Use this for initialization
 	void Start ()
@@ -41,6 +42,9 @@ public class GameManager : MonoBehaviour
 				this.selection.transform.position = this.deselection.transform.position;
 			}
 		}
+		if (this.money < this.piggyBank.cost) {
+			this.piggyBank.SetAlpha (this.money / this.piggyBank.cost);
+		}
 	}
 
 	protected void InitializeGround (int width, int length)
@@ -66,6 +70,6 @@ public class GameManager : MonoBehaviour
 	protected void InstantiatePiggyBank ()
 	{
 		Vector3 position = new Vector3 ((this.width / -2) - 1, 1f, (this.length / 2) - 0.5f);
-		Instantiate (this.piggyBank, position, Quaternion.identity);
+		this.piggyBank = (ToyController) Instantiate (this.piggyBankPrefab, position, Quaternion.identity);
 	}
 }
