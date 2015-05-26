@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,12 +11,13 @@ public class GameManager : MonoBehaviour
 	public GameObject selection;
 	public GameObject deselection;
 	public Text moneyText;
-	public ToyController piggyBankPrefab;
+	public ToyController[] prefabs;
 
 	private int width;
 	private int length;
 	private float money;
-	private ToyController piggyBank;
+	private ToyController[] toyStore;
+	private List<ToyController> toys;
 
 	// Use this for initialization
 	void Start ()
@@ -25,7 +27,9 @@ public class GameManager : MonoBehaviour
 		this.InitializeGround (this.width + 4, this.length + 4);
 		this.InitializeGrass (this.width, this.length);
 		this.money = 0f;
-		this.InstantiatePiggyBank ();
+		this.toyStore = new ToyController[this.prefabs.Length];
+		this.toys = new List<ToyController> ();
+		this.InstantiatePrefabs ();
 	}
 	
 	// Update is called once per frame
@@ -42,9 +46,7 @@ public class GameManager : MonoBehaviour
 				this.selection.transform.position = this.deselection.transform.position;
 			}
 		}
-		if (this.money < this.piggyBank.cost) {
-			this.piggyBank.SetAlpha (this.money / this.piggyBank.cost);
-		}
+		this.CheckAffordability ();
 	}
 
 	protected void InitializeGround (int width, int length)
@@ -67,9 +69,25 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	protected void InstantiatePiggyBank ()
+	protected void InstantiatePrefabs ()
 	{
-		Vector3 position = new Vector3 ((this.width / -2) - 1, 1f, (this.length / 2) - 0.5f);
-		this.piggyBank = (ToyController) Instantiate (this.piggyBankPrefab, position, Quaternion.identity);
+		int length = this.prefabs.Length;
+		for (int i = 0; i < length; i++) {
+			this.RefillToyStore(i);
+		}
+	}
+
+	protected void RefillToyStore (int toyIndex)
+	{
+		Vector3 position = new Vector3 ((this.width / -2f) - 1f, 1f, ((this.length / 2f) - 0.5f) - toyIndex);
+		this.toyStore[toyIndex] = (ToyController) Instantiate (this.prefabs[toyIndex], position, Quaternion.identity);
+	}
+
+	protected void CheckAffordability ()
+	{
+		int length = this.toyStore.Length;
+		for (int i = 0; i < length; i++) {
+			this.toyStore[i].CheckAffordability (this.money);
+		}
 	}
 }
