@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
 	public GameObject deselection;
 	public Text moneyText;
 	public ToyController[] prefabs;
+	public float initialMoney;
 
 	private int width;
 	private int length;
@@ -26,7 +27,7 @@ public class GameManager : MonoBehaviour
 		this.length = 4;
 		this.InitializeGround (this.width + 4, this.length + 4);
 		this.InitializeGrass (this.width, this.length);
-		this.money = 0f;
+		this.money = this.initialMoney;
 		this.toyStore = new ToyController[this.prefabs.Length];
 		this.toys = new List<ToyController> ();
 		this.InstantiatePrefabs ();
@@ -44,6 +45,11 @@ public class GameManager : MonoBehaviour
 				this.selection.transform.position = hit.transform.position + (Vector3.up * 0.1f);
 			} else if (hit.transform.tag == "Ground") {
 				this.selection.transform.position = this.deselection.transform.position;
+			} else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Toy")) {
+				if (Input.GetMouseButtonDown (0)) {
+					ToyController toy = hit.transform.gameObject.GetComponent<ToyController> ();
+					toy.SetInitialClick(Input.mousePosition);
+				}
 			}
 		}
 		this.CheckAffordability ();

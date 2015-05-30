@@ -11,6 +11,8 @@ public class ToyController : MonoBehaviour
 		Placed,
 	};
 	public ToyState state;
+	public Vector3 initialMousePosition;
+	public Vector3 initialToyPosition;
 
 	private MeshRenderer meshRenderer;
 
@@ -24,7 +26,18 @@ public class ToyController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-
+		if (ToyController.ToyState.BeingDragged == this.state) {
+			if (Input.GetMouseButtonUp (0)) {
+				this.state = ToyController.ToyState.Placed;
+			} else {
+				Vector3 difference = Input.mousePosition - this.initialMousePosition;
+				float xFactor = Screen.width / 22;
+				float yFactor = Screen.height / 5;
+				Vector3 translated = new Vector3(difference.x / xFactor, 0f, difference.y / yFactor);
+				Vector3 newPosition = this.initialToyPosition + translated;
+				this.transform.position = newPosition;
+			}
+		}
 	}
 
 	public void CheckAffordability (float money)
@@ -38,5 +51,12 @@ public class ToyController : MonoBehaviour
 			Color newColor = new Color (oldColor.r, oldColor.g, oldColor.b, alpha);
 			this.meshRenderer.material.color = newColor;
 		}
+	}
+
+	public void SetInitialClick (Vector3 mousePosition)
+	{
+		this.initialMousePosition = mousePosition;
+		this.initialToyPosition = this.transform.position;
+		this.state = ToyController.ToyState.BeingDragged;
 	}
 }
