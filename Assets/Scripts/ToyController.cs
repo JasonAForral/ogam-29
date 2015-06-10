@@ -31,7 +31,7 @@ public class ToyController : MonoBehaviour
 				this.state = ToyController.ToyState.Placed;
 			} else {
 				Vector3 difference = Input.mousePosition - this.initialMousePosition;
-				float xFactor = Screen.width / 22;
+				float xFactor = Screen.width / 15;
 				float yFactor = Screen.height / 5;
 				Vector3 translated = new Vector3(difference.x / xFactor, 0f, difference.y / yFactor);
 				Vector3 newPosition = this.initialToyPosition + translated;
