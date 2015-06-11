@@ -14,11 +14,18 @@ public class GameManager : MonoBehaviour
 	public ToyController[] prefabs;
 	public float initialMoney;
 
+    public LayerMask groundMask;
+    public LayerMask allMask;
+
 	private int width;
 	private int length;
 	private float money;
 	private ToyController[] toyStore;
 	private List<ToyController> toys;
+
+    public bool isDragging;
+
+
 
 	// Use this for initialization
 	void Start ()
@@ -40,18 +47,32 @@ public class GameManager : MonoBehaviour
 		this.moneyText.text = "Money: " + (int)this.money;
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 		RaycastHit hit;
-		if (Physics.Raycast (ray, out hit, 20f)) {
-			if (hit.transform.tag == "Grass") {
-				this.selection.transform.position = hit.transform.position + (Vector3.up * 0.1f);
-			} else if (hit.transform.tag == "Ground") {
-				this.selection.transform.position = this.deselection.transform.position;
-			} else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Toy")) {
-				if (Input.GetMouseButtonDown (0)) {
-					ToyController toy = hit.transform.gameObject.GetComponent<ToyController> ();
-					toy.SetInitialClick(Input.mousePosition);
-				}
-			}
-		}
+        LayerMask currentMask;
+        if (isDragging) {
+            currentMask = groundMask;
+        } else {
+            currentMask = allMask;
+        }
+
+        if (Physics.Raycast(ray, out hit, 20f, currentMask)) {
+            if (hit.transform.tag == "Grass") {
+                this.selection.transform.position = hit.transform.position + (Vector3.up * 0.1f);
+            } else if (hit.transform.tag == "Ground") {
+                this.selection.transform.position = this.deselection.transform.position;
+            } else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Toy")) {
+                if (Input.GetMouseButtonDown(0)) {
+                    ToyController toy = hit.transform.gameObject.GetComponent<ToyController>();
+                    Physics.Raycast(ray, out hit, 20f, groundMask);
+                    toy.SetInitialClick(Input.mousePosition, hit.point);
+                    isDragging = true;
+
+                }
+            }
+        }
+
+        if (isDragging && Input.GetMouseButtonUp(0)) {
+            isDragging = false;
+        }
 		this.CheckAffordability ();
 	}
 

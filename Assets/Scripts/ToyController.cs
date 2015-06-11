@@ -14,6 +14,8 @@ public class ToyController : MonoBehaviour
 	public Vector3 initialMousePosition;
 	public Vector3 initialToyPosition;
 
+    public Vector3 mouseGroundOffset;
+
 	private MeshRenderer meshRenderer;
 
 	// Use this for initialization
@@ -29,12 +31,18 @@ public class ToyController : MonoBehaviour
 		if (ToyController.ToyState.BeingDragged == this.state) {
 			if (Input.GetMouseButtonUp (0)) {
 				this.state = ToyController.ToyState.Placed;
+                
 			} else {
 				Vector3 difference = Input.mousePosition - this.initialMousePosition;
 				float xFactor = Screen.width / 15;
 				float yFactor = Screen.height / 5;
-				Vector3 translated = new Vector3(difference.x / xFactor, 0f, difference.y / yFactor);
-				Vector3 newPosition = this.initialToyPosition + translated;
+				//Vector3 translated = new Vector3(difference.x / xFactor, 0f, difference.y / yFactor);
+                //Vector3 newPosition = this.initialToyPosition + translated;
+
+                Vector3 newPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.forward * 4.89f);
+
+                //Vector3 newPosition = mouseGroundOffset+
+                newPosition.y = 1f;
 				this.transform.position = newPosition;
 			}
 		}
@@ -53,10 +61,12 @@ public class ToyController : MonoBehaviour
 		}
 	}
 
-	public void SetInitialClick (Vector3 mousePosition)
+	public void SetInitialClick (Vector3 mousePosition, Vector3 mouseGroundOffset)
 	{
 		this.initialMousePosition = mousePosition;
 		this.initialToyPosition = this.transform.position;
 		this.state = ToyController.ToyState.BeingDragged;
+
+        this.mouseGroundOffset = mouseGroundOffset;
 	}
 }
