@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager main;
+
 	public GameObject ground;
 	public GameObject grassLight;
 	public GameObject grassDark;
@@ -24,7 +26,7 @@ public class GameManager : MonoBehaviour
 	private List<ToyController> toys;
 
     public bool isDragging;
-
+    //public Vector3 groundHitPoint;
 
 
 	// Use this for initialization
@@ -38,6 +40,10 @@ public class GameManager : MonoBehaviour
 		this.toyStore = new ToyController[this.prefabs.Length];
 		this.toys = new List<ToyController> ();
 		this.InstantiatePrefabs ();
+
+        if (null == GameManager.main) {
+            GameManager.main = this;
+        }
 	}
 	
 	// Update is called once per frame
@@ -68,6 +74,7 @@ public class GameManager : MonoBehaviour
 
                 }
             }
+            //groundHitPoint = hit.point;
         }
 
         if (isDragging && Input.GetMouseButtonUp(0)) {

@@ -36,14 +36,23 @@ public class ToyController : MonoBehaviour
 				Vector3 difference = Input.mousePosition - this.initialMousePosition;
 				float xFactor = Screen.width / 15;
 				float yFactor = Screen.height / 5;
+                // original
 				//Vector3 translated = new Vector3(difference.x / xFactor, 0f, difference.y / yFactor);
                 //Vector3 newPosition = this.initialToyPosition + translated;
 
-                Vector3 newPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.forward * 4.89f);
+                // this kinda worked
+                //Vector3 newPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.forward * 4.89f);
+                //newPosition.y = 1f;
 
-                //Vector3 newPosition = mouseGroundOffset+
-                newPosition.y = 1f;
-				this.transform.position = newPosition;
+                // hitpoint offset
+                //Vector3 newPosition = GameManager.main.groundHitPoint + mouseGroundOffset;
+
+                // place it over grass selection
+                if (GameManager.main.selection.transform.position.y == 0.1f) {
+                    Vector3 newPosition = GameManager.main.selection.transform.position;
+                    newPosition.y = 1f;
+                    this.transform.position = newPosition;
+                }
 			}
 		}
 	}
@@ -61,12 +70,12 @@ public class ToyController : MonoBehaviour
 		}
 	}
 
-	public void SetInitialClick (Vector3 mousePosition, Vector3 mouseGroundOffset)
+	public void SetInitialClick (Vector3 mousePosition, Vector3 groundHitPoint)
 	{
 		this.initialMousePosition = mousePosition;
 		this.initialToyPosition = this.transform.position;
 		this.state = ToyController.ToyState.BeingDragged;
 
-        this.mouseGroundOffset = mouseGroundOffset;
+        this.mouseGroundOffset = this.transform.position - groundHitPoint;
 	}
 }
